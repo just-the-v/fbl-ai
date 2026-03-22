@@ -1,6 +1,6 @@
 {
   "name": "fbl-ai",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Automated session analysis for Claude Code — detect frictions, suggest improvements",
   "type": "module",
   "bin": {

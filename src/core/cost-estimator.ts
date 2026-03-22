@@ -54,14 +54,8 @@ export function formatCostComparison(sessions: SessionFile[]): string {
   const lines = providers.map(p => {
     const est = estimateCost(sessions, p.type, p.model);
     const cost = est.estimated_cost_usd === 0 ? 'free' : `~$${est.estimated_cost_usd.toFixed(2)}`;
-    const time = formatTime(est.estimated_time_seconds);
-    return `  ${p.label.padEnd(22)} ${cost.padEnd(12)} ${time}`;
+    return `  ${p.label.padEnd(22)} ${cost}`;
   });
 
-  return `Estimated cost:\n  ${'Provider'.padEnd(22)} ${'Cost'.padEnd(12)} Time\n${lines.join('\n')}`;
-}
-
-function formatTime(seconds: number): string {
-  if (seconds < 60) return `~${seconds}s`;
-  return `~${Math.ceil(seconds / 60)}min`;
+  return `Estimated cost:\n  ${'Provider'.padEnd(22)} Cost\n${lines.join('\n')}`;
 }

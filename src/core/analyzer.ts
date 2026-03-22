@@ -59,9 +59,15 @@ export async function analyzeSession(
     duration_seconds: session.durationSeconds,
     message_count: session.messageCount,
     tool_use_count: session.toolUseCount,
-    frictions: parsed.frictions ?? [],
+    frictions: (parsed.frictions ?? []).map((f: any) => ({
+      ...f,
+      description: typeof f.description === 'string' ? f.description.slice(0, 200) : f.description,
+      category: typeof f.category === 'string' ? f.category.slice(0, 50) : f.category,
+    })),
     suggestions: (parsed.suggestions ?? []).map((s: any) => ({
       ...s,
+      rule: typeof s.rule === 'string' ? s.rule.slice(0, 300) : s.rule,
+      reasoning: typeof s.reasoning === 'string' ? s.reasoning.slice(0, 200) : s.reasoning,
       id: randomUUID(),
       status: 'pending' as const,
     })),

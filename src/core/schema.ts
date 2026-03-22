@@ -33,6 +33,7 @@ export const SuggestionSchema = z.object({
   rule: z.string().max(300),
   confidence: z.enum(['high', 'medium', 'low']),
   reasoning: z.string().max(200),
+  friction_types: z.array(FrictionType).min(1),
   status: z.enum(['pending', 'applied', 'dismissed']).default('pending'),
 });
 
