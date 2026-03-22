@@ -91,7 +91,8 @@ Analyze this session and return a JSON object (NO markdown fences, NO explanatio
       "scope": "<global|project>",
       "rule": "<max 300 chars, the actionable rule to add>",
       "confidence": "<high|medium|low>",
-      "reasoning": "<max 200 chars explaining why>"
+      "reasoning": "<max 200 chars explaining why>",
+      "friction_types": ["<friction type that caused this suggestion>", "..."]
     }
   ],
 
@@ -124,5 +125,6 @@ Rules:
 - If you can't determine a field, use reasonable defaults
 - Do NOT include id or status fields in suggestions (they are added by the CLI)
 - Be specific in suggestions: prefer "Always run tests before committing in this project" over "Run tests"
+- Each suggestion MUST reference at least one friction type from the frictions array via friction_types
 - Focus on patterns that would improve FUTURE sessions, not just describe what happened`;
 }

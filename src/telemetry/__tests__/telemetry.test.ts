@@ -38,6 +38,7 @@ function makeAnalysis(overrides?: Partial<SessionAnalysis>): SessionAnalysis {
         rule: 'Always read the README before making changes',
         confidence: 'high',
         reasoning: 'Multiple sessions showed missing context issues',
+        friction_types: ['missing_context'],
         status: 'pending',
       },
     ],

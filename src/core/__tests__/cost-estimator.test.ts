@@ -82,25 +82,6 @@ describe('formatCostComparison', () => {
     expect(output).toContain('~$');
     expect(output).toContain('Provider');
     expect(output).toContain('Cost');
-    expect(output).toContain('Time');
-  });
-});
-
-describe('formatTime (via formatCostComparison)', () => {
-  it('shows seconds for < 60s', () => {
-    // 1 session with Haiku = 5s
-    const sessions = [{ path: 'a.jsonl', size: 100 }];
-    const output = formatCostComparison(sessions);
-    expect(output).toContain('~5s'); // Haiku line
-  });
-
-  it('shows minutes for >= 60s', () => {
-    // 10 sessions with local = 1000s = ~17min
-    const sessions = Array.from({ length: 10 }, (_, i) => ({
-      path: `s-${i}.jsonl`,
-      size: 100,
-    }));
-    const output = formatCostComparison(sessions);
-    expect(output).toContain('min');
+    expect(output).not.toContain('Time');
   });
 });

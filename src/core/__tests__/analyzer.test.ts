@@ -26,6 +26,7 @@ function makeValidLLMJson() {
         rule: 'Always split large functions into smaller units before refactoring',
         confidence: 'high',
         reasoning: 'Reduces cognitive load during review',
+        friction_types: ['wrong_approach'],
       },
     ],
     satisfaction: {
