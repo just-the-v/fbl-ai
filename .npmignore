@@ -8,3 +8,5 @@ src/**/*.test.ts
 .feedback-loop/
 .git/
 .github/
+PROGRESS.md
+PROMPT.md

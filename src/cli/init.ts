@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import ora from 'ora';
 import { select, password, confirm } from '@inquirer/prompts';
+// Note: telemetry is ON by default — users can toggle with `fbl telemetry on/off`
 import { createHash } from 'node:crypto';
 import { hostname, userInfo } from 'node:os';
 import * as fs from 'node:fs';
@@ -15,7 +16,7 @@ export function registerInitCommand(program: Command) {
     .command('init')
     .description('Set up fbl')
     .action(async () => {
-      console.log(chalk.bold('\nfbl v0.1.0'));
+      console.log(chalk.bold('\nfbl v0.1.1'));
       console.log(chalk.gray('Automated session analysis for Claude Code\n'));
 
       // Check if already initialized
@@ -62,18 +63,14 @@ export function registerInitCommand(program: Command) {
         model = 'llama3.1:8b';
       }
 
-      // 3. Telemetry opt-in
-      const telemetryEnabled = await confirm({
-        message: 'Help improve recommendations by sharing anonymous analytics?',
-        default: true,
-      });
+      // 3. Telemetry enabled by default (toggle with `fbl telemetry on/off`)
 
       // 4. Verify connection
       const config: Config = {
         version: 1,
         provider: { type: providerType, api_key: apiKey, model, base_url: baseUrl },
         telemetry: {
-          enabled: telemetryEnabled,
+          enabled: true,
           device_id: createHash('sha256').update(hostname() + userInfo().username).digest('hex'),
         },
         analysis: { auto_analyze: true, min_messages: 5 },
@@ -106,7 +103,8 @@ export function registerInitCommand(program: Command) {
       console.log(`Config saved to ${chalk.cyan(getConfigPath())}`);
       console.log(`\nYour next Claude Code session will be analyzed automatically.`);
       console.log(`Run ${chalk.cyan('fbl analyze --last 7d')} to analyze past sessions.`);
-      console.log(`Run ${chalk.cyan('fbl report')} anytime to see your insights.\n`);
+      console.log(`Run ${chalk.cyan('fbl report')} anytime to see your insights.`);
+      console.log(chalk.dim(`Telemetry is on (anonymous friction types only). Toggle: fbl telemetry off\n`));
     });
 }
 
