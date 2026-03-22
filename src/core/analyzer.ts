@@ -1,0 +1,92 @@
+import { randomUUID } from 'node:crypto';
+import { parseTranscript } from './parser.js';
+import { buildAnalysisPrompt } from './prompt.js';
+import { SessionAnalysisSchema, type SessionAnalysis } from './schema.js';
+import { createAdapter } from '../adapters/registry.js';
+import type { Config } from '../storage/config.js';
+import type { LLMAdapter } from '../adapters/types.js';
+
+export interface AnalyzeOptions {
+  config: Config;
+  adapter?: LLMAdapter; // allow injecting for testing
+  maxTokenBudget?: number;
+  projectPath?: string; // Working directory where the session ran
+}
+
+export async function analyzeSession(
+  transcriptPath: string,
+  options: AnalyzeOptions
+): Promise<SessionAnalysis | null> {
+  // 1. Parse the JSONL transcript
+  const session = parseTranscript(transcriptPath);
+
+  // 2. Check min_messages threshold
+  if (session.messageCount < options.config.analysis.min_messages) {
+    return null; // skip short sessions
+  }
+
+  // 3. Get or create adapter
+  const adapter = options.adapter ?? createAdapter(options.config);
+
+  // 4. Build prompt
+  const prompt = buildAnalysisPrompt(session, options.maxTokenBudget);
+
+  // 5. Call LLM
+  let response = await adapter.analyze(prompt);
+
+  // 6. Parse and validate LLM response
+  let parsed = tryParseResponse(response.content);
+
+  // 7. If malformed, retry once with error feedback
+  if (!parsed) {
+    const retryPrompt =
+      prompt +
+      '\n\nIMPORTANT: Your previous response was not valid JSON. Please output ONLY a JSON object with no markdown fences or extra text.';
+    response = await adapter.analyze(retryPrompt);
+    parsed = tryParseResponse(response.content);
+    if (!parsed) {
+      throw new Error('LLM returned invalid JSON after retry');
+    }
+  }
+
+  // 8. Enrich: add IDs to suggestions, schema_version, metadata
+  const enriched: SessionAnalysis = {
+    schema_version: 1 as const,
+    session_id: session.sessionId,
+    analyzed_at: new Date().toISOString(),
+    provider: 'claude_code' as const,
+    model_used: response.model,
+    duration_seconds: session.durationSeconds,
+    message_count: session.messageCount,
+    tool_use_count: session.toolUseCount,
+    frictions: parsed.frictions ?? [],
+    suggestions: (parsed.suggestions ?? []).map((s: any) => ({
+      ...s,
+      id: randomUUID(),
+      status: 'pending' as const,
+    })),
+    satisfaction: parsed.satisfaction ?? {
+      positive_signals: 0,
+      negative_signals: 0,
+    },
+    summary: parsed.summary ?? '',
+    ...(session.startedAt ? { session_started_at: session.startedAt } : {}),
+    ...(options.projectPath ? { project_path: options.projectPath } : {}),
+  };
+
+  // 9. Validate with Zod
+  return SessionAnalysisSchema.parse(enriched);
+}
+
+function tryParseResponse(content: string): any | null {
+  // Strip markdown fences if present
+  let cleaned = content.trim();
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+  }
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    return null;
+  }
+}

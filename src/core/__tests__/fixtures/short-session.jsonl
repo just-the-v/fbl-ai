@@ -1,0 +1,5 @@
+{"type":"human","sessionId":"session-001","uuid":"u1","timestamp":"2026-03-22T10:00:00Z","message":{"role":"user","content":"Hello, can you help me?"}}
+{"type":"assistant","sessionId":"session-001","uuid":"u2","parentUuid":"u1","timestamp":"2026-03-22T10:00:05Z","message":{"role":"assistant","content":[{"type":"text","text":"Sure! Let me check that file for you."},{"type":"tool_use","id":"tool1","name":"Read","input":{"file_path":"/tmp/test.ts"}}]}}
+{"type":"assistant","sessionId":"session-001","uuid":"u3","parentUuid":"u2","timestamp":"2026-03-22T10:00:10Z","message":{"role":"assistant","content":[{"type":"tool_result","content":"file contents here"},{"type":"text","text":"Here is what I found in the file."}]}}
+{"type":"human","sessionId":"session-001","uuid":"u4","parentUuid":"u3","timestamp":"2026-03-22T10:00:15Z","message":{"role":"user","content":"Thanks, now fix the bug please."}}
+{"type":"assistant","sessionId":"session-001","uuid":"u5","parentUuid":"u4","timestamp":"2026-03-22T10:00:30Z","message":{"role":"assistant","content":"Done! I fixed the bug by updating the return type."}}

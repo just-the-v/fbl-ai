@@ -1,0 +1,10 @@
+worker/
+spec/
+tasks/
+src/**/__tests__/
+src/**/*.test.ts
+*.test.ts
+.fbl/
+.feedback-loop/
+.git/
+.github/

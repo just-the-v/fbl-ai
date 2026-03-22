@@ -1,0 +1,5 @@
+{"type":"human","sessionId":"session-bad","uuid":"b1","timestamp":"2026-03-22T12:00:00Z","message":{"role":"user","content":"First valid message"}}
+this is not valid json at all
+{"type":"assistant","sessionId":"session-bad","uuid":"b2","timestamp":"2026-03-22T12:00:10Z","message":{"role":"assistant","content":"Second valid message"}}
+{broken json: true, missing quotes
+{"type":"human","sessionId":"session-bad","uuid":"b3","timestamp":"2026-03-22T12:00:20Z","message":{"role":"user","content":"Third valid message"}}

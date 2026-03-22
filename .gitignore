@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.fbl/
+.feedback-loop/
+*.tsbuildinfo
+PROGRESS.md
+PROMPT.md

@@ -1,0 +1,57 @@
+{
+  "name": "fbl-ai",
+  "version": "0.1.0",
+  "description": "Automated session analysis for Claude Code — detect frictions, suggest improvements",
+  "type": "module",
+  "bin": {
+    "fbl": "./dist/bin/fbl.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsup --watch",
+    "prepublishOnly": "npm run typecheck && npm run test && npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vastugo/feedback-loop"
+  },
+  "homepage": "https://github.com/vastugo/feedback-loop#readme",
+  "author": "Hugo Vast",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "license": "FSL-1.1-MIT",
+  "keywords": [
+    "claude-code",
+    "ai",
+    "developer-tools",
+    "feedback",
+    "analysis"
+  ],
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
+    "@inquirer/prompts": "^8.3.2",
+    "chalk": "^5.6.2",
+    "cli-table3": "^0.6.5",
+    "commander": "^14.0.3",
+    "ora": "^9.3.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}
