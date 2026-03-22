@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { parseTranscript } from './parser.js';
 import { buildAnalysisPrompt } from './prompt.js';
-import { SessionAnalysisSchema, type SessionAnalysis } from './schema.js';
+import { SessionAnalysisSchema, FrictionType, type SessionAnalysis } from './schema.js';
 import { createAdapter } from '../adapters/registry.js';
 import type { Config } from '../storage/config.js';
 import type { LLMAdapter } from '../adapters/types.js';
@@ -59,7 +59,9 @@ export async function analyzeSession(
     duration_seconds: session.durationSeconds,
     message_count: session.messageCount,
     tool_use_count: session.toolUseCount,
-    frictions: (parsed.frictions ?? []).map((f: any) => ({
+    frictions: (parsed.frictions ?? []).filter((f: any) =>
+      FrictionType.safeParse(f.type).success
+    ).map((f: any) => ({
       ...f,
       description: typeof f.description === 'string' ? f.description.slice(0, 200) : f.description,
       category: typeof f.category === 'string' ? f.category.slice(0, 50) : f.category,
@@ -68,6 +70,9 @@ export async function analyzeSession(
       ...s,
       rule: typeof s.rule === 'string' ? s.rule.slice(0, 300) : s.rule,
       reasoning: typeof s.reasoning === 'string' ? s.reasoning.slice(0, 200) : s.reasoning,
+      friction_types: Array.isArray(s.friction_types)
+        ? s.friction_types.filter((ft: any) => FrictionType.safeParse(ft).success)
+        : [],
       id: randomUUID(),
       status: 'pending' as const,
     })),
