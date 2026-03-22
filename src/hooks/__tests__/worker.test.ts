@@ -63,7 +63,7 @@ function makeAnalysis() {
         target: 'claude_md' as const,
         scope: 'project' as const,
         rule: 'Always run tests before committing',
-        confidence: 0.8,
+        confidence: 'high' as const,
         reasoning: 'Tests failed multiple times',
         status: 'pending' as const,
       },

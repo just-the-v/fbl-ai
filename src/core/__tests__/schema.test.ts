@@ -26,7 +26,7 @@ const validSession = {
       target: 'claude_md',
       scope: 'project',
       rule: 'Always use Glob for file search',
-      confidence: 0.85,
+      confidence: 'high',
       reasoning: 'Repeated grep usage where Glob would be faster',
       status: 'pending',
     },
@@ -71,7 +71,7 @@ describe('SuggestionSchema', () => {
       target: 'claude_md',
       scope: 'global',
       rule: 'Use Glob',
-      confidence: 0.9,
+      confidence: 'high',
       reasoning: 'Better performance',
       // status omitted — should default to 'pending'
     };
@@ -96,7 +96,7 @@ describe('TelemetryPayloadSchema', () => {
         frictions: [
           { type: 'buggy_code', category: 'code', severity: 'high', count: 1 },
         ],
-        suggestions: [{ target: 'claude_md', confidence: 0.8 }],
+        suggestions: [{ target: 'claude_md', confidence: 'high' }],
         satisfaction: { positive_signals: 2, negative_signals: 0 },
       },
     };

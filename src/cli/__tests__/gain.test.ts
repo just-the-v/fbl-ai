@@ -238,9 +238,9 @@ describe('gain command', () => {
     }));
 
     storeSuggestions([
-      { id: randomUUID(), target: 'claude_md', scope: 'global', rule: 'Rule A', confidence: 0.9, reasoning: 'R', status: 'applied', source_analysis: 'a-1' },
-      { id: randomUUID(), target: 'claude_md', scope: 'global', rule: 'Rule B', confidence: 0.8, reasoning: 'R', status: 'applied', source_analysis: 'a-2' },
-      { id: randomUUID(), target: 'skill', scope: 'project', rule: 'Rule C', confidence: 0.7, reasoning: 'R', status: 'pending', source_analysis: 'a-3' },
+      { id: randomUUID(), target: 'claude_md', scope: 'global', rule: 'Rule A', confidence: 'high' as const, reasoning: 'R', status: 'applied', source_analysis: 'a-1' },
+      { id: randomUUID(), target: 'claude_md', scope: 'global', rule: 'Rule B', confidence: 'high' as const, reasoning: 'R', status: 'applied', source_analysis: 'a-2' },
+      { id: randomUUID(), target: 'skill', scope: 'project', rule: 'Rule C', confidence: 'medium' as const, reasoning: 'R', status: 'pending', source_analysis: 'a-3' },
     ]);
 
     const logs: string[] = [];

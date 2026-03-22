@@ -151,7 +151,7 @@ describe('suggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'Always use typed errors',
-        confidence: 0.85,
+        confidence: 'high' as const,
         reasoning: 'Repeated type errors seen',
         status: 'pending' as const,
         source_analysis: 'analysis-1',
@@ -171,7 +171,7 @@ describe('suggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'Rule A',
-        confidence: 0.9,
+        confidence: 'high' as const,
         reasoning: 'Reason A',
         status: 'pending' as const,
         source_analysis: 'a-1',
@@ -181,7 +181,7 @@ describe('suggestions', () => {
         target: 'skill' as const,
         scope: 'project' as const,
         rule: 'Rule B',
-        confidence: 0.7,
+        confidence: 'medium' as const,
         reasoning: 'Reason B',
         status: 'applied' as const,
         source_analysis: 'a-2',
@@ -204,7 +204,7 @@ describe('suggestions', () => {
         target: 'workflow' as const,
         scope: 'global' as const,
         rule: 'Rule C',
-        confidence: 0.8,
+        confidence: 'high' as const,
         reasoning: 'Reason C',
         status: 'pending' as const,
         source_analysis: 'a-3',
@@ -231,7 +231,7 @@ describe('suggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'R1',
-        confidence: 0.9,
+        confidence: 'high' as const,
         reasoning: 'X',
         status: 'pending' as const,
         source_analysis: 'a',
@@ -241,7 +241,7 @@ describe('suggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'R2',
-        confidence: 0.9,
+        confidence: 'high' as const,
         reasoning: 'Y',
         status: 'applied' as const,
         source_analysis: 'b',
@@ -260,7 +260,7 @@ describe('deduplicateSuggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'Always use typed error handling in TypeScript',
-        confidence: 0.9,
+        confidence: 'high' as const,
         reasoning: 'Reason A',
         status: 'pending' as const,
         source_analysis: 'session-1',
@@ -270,7 +270,7 @@ describe('deduplicateSuggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'Always use typed error handling for TypeScript code',
-        confidence: 0.7,
+        confidence: 'medium' as const,
         reasoning: 'Reason B',
         status: 'pending' as const,
         source_analysis: 'session-2',
@@ -278,7 +278,7 @@ describe('deduplicateSuggestions', () => {
     ];
     const result = deduplicateSuggestions(suggestions);
     expect(result).toHaveLength(1);
-    expect(result[0].confidence).toBe(0.9); // keeps highest confidence
+    expect(result[0].confidence).toBe('high'); // keeps highest confidence
     expect(result[0].sessionCount).toBe(2);
   });
 
@@ -290,7 +290,7 @@ describe('deduplicateSuggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'Always use typed errors',
-        confidence: 0.9,
+        confidence: 'high' as const,
         reasoning: 'R',
         status: 'pending' as const,
         source_analysis: 'session-1',
@@ -300,7 +300,7 @@ describe('deduplicateSuggestions', () => {
         target: 'skill' as const,
         scope: 'global' as const,
         rule: 'Always use typed errors',
-        confidence: 0.8,
+        confidence: 'high' as const,
         reasoning: 'R',
         status: 'pending' as const,
         source_analysis: 'session-2',
@@ -318,7 +318,7 @@ describe('deduplicateSuggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'Always use typed error handling in TypeScript projects',
-        confidence: 0.9,
+        confidence: 'high' as const,
         reasoning: 'R',
         status: 'pending' as const,
         source_analysis: 'session-1',
@@ -328,7 +328,7 @@ describe('deduplicateSuggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'Use typed error handling in TypeScript',
-        confidence: 0.7,
+        confidence: 'medium' as const,
         reasoning: 'R',
         status: 'pending' as const,
         source_analysis: 'session-2',
@@ -338,7 +338,7 @@ describe('deduplicateSuggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'Always use typed error handling for TypeScript code',
-        confidence: 0.8,
+        confidence: 'high' as const,
         reasoning: 'R',
         status: 'pending' as const,
         source_analysis: 'session-3',
@@ -347,7 +347,7 @@ describe('deduplicateSuggestions', () => {
     const result = deduplicateSuggestions(suggestions);
     expect(result).toHaveLength(1);
     expect(result[0].sessionCount).toBe(3);
-    expect(result[0].confidence).toBe(0.9); // keeps highest
+    expect(result[0].confidence).toBe('high'); // keeps highest
   });
 
   it('merges suggestions with varied wording but same core concept', async () => {
@@ -358,7 +358,7 @@ describe('deduplicateSuggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'Add error handling rules to CLAUDE.md',
-        confidence: 0.85,
+        confidence: 'high' as const,
         reasoning: 'R',
         status: 'pending' as const,
         source_analysis: 'session-1',
@@ -368,7 +368,7 @@ describe('deduplicateSuggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'Add error handling conventions and rules',
-        confidence: 0.75,
+        confidence: 'medium' as const,
         reasoning: 'R',
         status: 'pending' as const,
         source_analysis: 'session-2',
@@ -387,7 +387,7 @@ describe('deduplicateSuggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'Always use typed error handling',
-        confidence: 0.9,
+        confidence: 'high' as const,
         reasoning: 'R',
         status: 'pending' as const,
         source_analysis: 'session-1',
@@ -397,7 +397,7 @@ describe('deduplicateSuggestions', () => {
         target: 'claude_md' as const,
         scope: 'global' as const,
         rule: 'Prefer functional programming patterns',
-        confidence: 0.8,
+        confidence: 'high' as const,
         reasoning: 'R',
         status: 'pending' as const,
         source_analysis: 'session-2',

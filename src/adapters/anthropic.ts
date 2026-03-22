@@ -45,12 +45,25 @@ export class AnthropicAdapter implements LLMAdapter {
     const start = Date.now();
     let lastError: unknown;
 
+    // Split prompt into cacheable system instructions and variable transcript
+    const marker = '## Transcript';
+    const markerIndex = prompt.indexOf(marker);
+    const systemPrompt = markerIndex !== -1 ? prompt.slice(0, markerIndex).trim() : '';
+    const userPrompt = markerIndex !== -1 ? prompt.slice(markerIndex) : prompt;
+
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
       try {
         const response = await this.client.messages.create({
           model: this.model,
           max_tokens: 2048,
-          messages: [{ role: 'user', content: prompt }],
+          ...(systemPrompt
+            ? {
+                system: [{ type: 'text' as const, text: systemPrompt, cache_control: { type: 'ephemeral' as const } }],
+                messages: [{ role: 'user' as const, content: userPrompt }],
+              }
+            : {
+                messages: [{ role: 'user' as const, content: prompt }],
+              }),
         });
         return {
           content: response.content[0].type === 'text' ? response.content[0].text : '',

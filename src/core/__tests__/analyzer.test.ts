@@ -24,7 +24,7 @@ function makeValidLLMJson() {
         target: 'claude_md',
         scope: 'project',
         rule: 'Always split large functions into smaller units before refactoring',
-        confidence: 0.8,
+        confidence: 'high',
         reasoning: 'Reduces cognitive load during review',
       },
     ],

@@ -56,6 +56,14 @@ export function getNextPendingSuggestionNumber(): number {
 
 export type DisplaySuggestion = SuggestionIndexItem & { sessionCount: number; projects: string[] };
 
+function confidenceRank(level: 'high' | 'medium' | 'low'): number {
+  switch (level) {
+    case 'high': return 2;
+    case 'medium': return 1;
+    case 'low': return 0;
+  }
+}
+
 /**
  * Extract significant words from a string (lowercase, length >= 3).
  */
@@ -130,7 +138,7 @@ export function deduplicateSuggestions(
       if (shouldMerge(group.representative, s)) {
         group.sources.add(s.source_analysis);
         if (s.project_path) group.projects.add(s.project_path);
-        if (s.confidence > group.representative.confidence) {
+        if (confidenceRank(s.confidence) > confidenceRank(group.representative.confidence)) {
           group.representative = s;
         }
         merged = true;
@@ -162,7 +170,7 @@ export function deduplicateSuggestions(
 export function getDisplaySuggestions(limit?: number, projectFilter?: string): DisplaySuggestion[] {
   const pending = getSuggestionsByStatus('pending');
   let deduped = deduplicateSuggestions(pending)
-    .sort((a, b) => b.confidence - a.confidence);
+    .sort((a, b) => confidenceRank(b.confidence) - confidenceRank(a.confidence));
 
   if (projectFilter) {
     // Show suggestions that are either:

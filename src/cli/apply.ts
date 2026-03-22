@@ -61,7 +61,7 @@ export function registerApplyCommand(program: Command) {
         console.log(`${chalk.bold('Target:')}    ${suggestion.target}`);
         console.log(`${chalk.bold('Scope:')}     ${suggestion.scope}`);
         console.log(`${chalk.bold('File:')}      ${targetFile}`);
-        console.log(`${chalk.bold('Confidence:')} ${(suggestion.confidence * 100).toFixed(0)}%`);
+        console.log(`${chalk.bold('Confidence:')} ${suggestion.confidence}`);
         console.log(`${chalk.bold('Sessions:')}  ${suggestion.sessionCount}`);
         console.log(`\n${chalk.bold('Rule:')}`);
         console.log(`  ${suggestion.rule}`);
