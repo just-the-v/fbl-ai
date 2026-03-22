@@ -21,6 +21,14 @@ CREATE TABLE IF NOT EXISTS frictions (
   count INTEGER NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS rate_limits (
+  ip_hash TEXT NOT NULL,
+  window TEXT NOT NULL,
+  count INTEGER NOT NULL DEFAULT 1,
+  PRIMARY KEY (ip_hash, window)
+);
+
 CREATE INDEX IF NOT EXISTS idx_frictions_type ON frictions(type);
 CREATE INDEX IF NOT EXISTS idx_frictions_category ON frictions(category);
 CREATE INDEX IF NOT EXISTS idx_analyses_created ON analyses(created_at);
+CREATE INDEX IF NOT EXISTS idx_rate_limits_window ON rate_limits(window);

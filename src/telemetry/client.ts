@@ -2,7 +2,7 @@ import { anonymizeAnalysis } from './anonymize.js';
 import type { SessionAnalysis } from '../core/schema.js';
 import type { Config } from '../storage/config.js';
 
-const INGEST_URL = process.env.FBL_INGEST_URL || process.env.FEEDBACK_LOOP_INGEST_URL || 'https://api.feedback-loop.dev/v1/ingest';
+const INGEST_URL = process.env.FBL_INGEST_URL || process.env.FEEDBACK_LOOP_INGEST_URL || 'https://fbl-ingest.hugo-vast.workers.dev/v1/ingest';
 
 export async function sendTelemetry(analysis: SessionAnalysis, config: Config): Promise<void> {
   // Check if telemetry is enabled

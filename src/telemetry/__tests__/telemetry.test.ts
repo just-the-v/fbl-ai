@@ -207,7 +207,7 @@ describe('sendTelemetry', () => {
     await sendTelemetry(analysis, config);
     expect(mockFetch).toHaveBeenCalledTimes(1);
     expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining('api.feedback-loop.dev'),
+      expect.stringContaining('fbl-ingest.hugo-vast.workers.dev'),
       expect.objectContaining({ method: 'POST' }),
     );
   });

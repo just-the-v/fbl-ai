@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Copied from CLI src/core/schema.ts — no monorepo yet
+// Copied from CLI src/core/schema.ts — adapted for zod v3
 
 export const FrictionType = z.enum([
   'wrong_approach',
@@ -22,14 +22,14 @@ export const TelemetryPayloadSchema = z.object({
     schema_version: z.literal(1),
     provider: z.string(),
     model_used: z.string(),
-    message_count: z.int(),
-    tool_use_count: z.int().optional(),
+    message_count: z.number().int(),
+    tool_use_count: z.number().int().optional(),
     frictions: z.array(
       z.object({
         type: FrictionType,
         category: z.string(),
         severity: z.enum(['low', 'medium', 'high']),
-        count: z.int().min(1),
+        count: z.number().int().min(1),
       }),
     ),
     suggestions: z.array(
@@ -39,8 +39,8 @@ export const TelemetryPayloadSchema = z.object({
       }),
     ),
     satisfaction: z.object({
-      positive_signals: z.int(),
-      negative_signals: z.int(),
+      positive_signals: z.number().int(),
+      negative_signals: z.number().int(),
     }),
   }),
 });
