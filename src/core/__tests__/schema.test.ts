@@ -28,6 +28,7 @@ const validSession = {
       rule: 'Always use Glob for file search',
       confidence: 'high',
       reasoning: 'Repeated grep usage where Glob would be faster',
+      friction_types: ['wrong_approach'],
       status: 'pending',
     },
   ],
@@ -73,6 +74,7 @@ describe('SuggestionSchema', () => {
       rule: 'Use Glob',
       confidence: 'high',
       reasoning: 'Better performance',
+      friction_types: ['wrong_approach'],
       // status omitted — should default to 'pending'
     };
     const result = SuggestionSchema.parse(input);

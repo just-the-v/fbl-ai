@@ -65,6 +65,7 @@ function makeAnalysis() {
         rule: 'Always run tests before committing',
         confidence: 'high' as const,
         reasoning: 'Tests failed multiple times',
+        friction_types: ['repeated_failure' as const],
         status: 'pending' as const,
       },
     ],

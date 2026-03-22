@@ -170,7 +170,7 @@ export function deduplicateSuggestions(
 export function getDisplaySuggestions(limit?: number, projectFilter?: string): DisplaySuggestion[] {
   const pending = getSuggestionsByStatus('pending');
   let deduped = deduplicateSuggestions(pending)
-    .sort((a, b) => confidenceRank(b.confidence) - confidenceRank(a.confidence));
+    .sort((a, b) => b.sessionCount - a.sessionCount || confidenceRank(b.confidence) - confidenceRank(a.confidence));
 
   if (projectFilter) {
     // Show suggestions that are either:

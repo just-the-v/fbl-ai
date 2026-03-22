@@ -37,6 +37,7 @@ const MOCK_LLM_RESPONSE = {
       rule: 'Always use vitest for testing in this project',
       confidence: 'high' as const,
       reasoning: 'Multiple test framework confusion detected',
+      friction_types: ['wrong_approach'],
     },
   ],
   satisfaction: { positive_signals: 3, negative_signals: 1 },
@@ -122,6 +123,7 @@ function makeSessionAnalysis(overrides: Partial<SessionAnalysis> = {}): SessionA
         rule: 'Always use vitest for testing in this project',
         confidence: 'high' as const,
         reasoning: 'Multiple test framework confusion detected',
+        friction_types: ['wrong_approach'],
         status: 'pending',
       },
       {
@@ -131,6 +133,7 @@ function makeSessionAnalysis(overrides: Partial<SessionAnalysis> = {}): SessionA
         rule: 'Use skill for repetitive test patterns',
         confidence: 'medium' as const,
         reasoning: 'Repeated similar test setups across sessions',
+        friction_types: ['wrong_approach'],
         status: 'pending',
       },
     ],

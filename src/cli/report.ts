@@ -149,8 +149,9 @@ export function registerReportCommand(program: Command): void {
       const projectDeduped = getDisplaySuggestions(undefined, currentProject);
       const globalDeduped = getDisplaySuggestions(undefined, undefined);
       const allDeduped = projectDeduped;
-      const displayLimit = showAll ? allDeduped.length : 10;
-      const displayed = allDeduped.slice(0, displayLimit);
+      const recurring = allDeduped.filter(s => s.sessionCount >= 2);
+      const displayLimit = showAll ? recurring.length : Math.min(10, recurring.length);
+      const displayed = recurring.slice(0, displayLimit);
 
       if (displayed.length > 0) {
         console.log(chalk.bold('Suggestions'));
@@ -161,13 +162,20 @@ export function registerReportCommand(program: Command): void {
           console.log(
             `  ${chalk.cyan(`[${i + 1}]`)} ${chalk.cyan(`[${label}${tag}]`)} ${chalk.white(`"${s.rule}"`)}`,
           );
+          const frictions = s.friction_types?.length ? s.friction_types.join(', ') : '';
+          const frictionLabel = frictions ? ` · ${frictions}` : '';
           console.log(
-            `                  Confidence: ${s.confidence} | Based on: ${s.sessionCount} session${s.sessionCount > 1 ? 's' : ''}`,
+            `                  ${s.sessionCount} session${s.sessionCount > 1 ? 's' : ''}${frictionLabel}`,
           );
         }
-        if (allDeduped.length > displayLimit) {
+        if (recurring.length > displayLimit) {
           console.log(
-            chalk.dim(`  (${allDeduped.length - displayLimit} more suggestions hidden, use --full to show)`),
+            chalk.dim(`  (${recurring.length - displayLimit} more suggestions hidden, use --full to show)`),
+          );
+        }
+        if (allDeduped.length > recurring.length) {
+          console.log(
+            chalk.dim(`  (${allDeduped.length - recurring.length} single-session suggestions hidden)`),
           );
         }
 
@@ -217,7 +225,7 @@ export function registerReportCommand(program: Command): void {
       // Footer
       if (displayed.length > 0) {
         console.log(chalk.dim('Apply a suggestion: fbl apply <number>'));
-        if (allDeduped.length > displayLimit) {
+        if (recurring.length > displayLimit) {
           console.log(chalk.dim('Suggestion numbers may change after new analyses. Use --dry-run before applying.'));
         }
       }
