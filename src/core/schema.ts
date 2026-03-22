@@ -31,7 +31,7 @@ export const SuggestionSchema = z.object({
   target: z.enum(['claude_md', 'skill', 'workflow', 'hook', 'settings']),
   scope: z.enum(['global', 'project']),
   rule: z.string().max(300),
-  confidence: z.number().min(0).max(1),
+  confidence: z.enum(['high', 'medium', 'low']),
   reasoning: z.string().max(200),
   status: z.enum(['pending', 'applied', 'dismissed']).default('pending'),
 });

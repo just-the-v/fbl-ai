@@ -24,7 +24,7 @@ export const TelemetryPayloadSchema = z.object({
     suggestions: z.array(
       z.object({
         target: z.enum(['claude_md', 'skill', 'workflow', 'hook', 'settings']),
-        confidence: z.number().min(0).max(1),
+        confidence: z.enum(['high', 'medium', 'low']),
       }),
     ),
     satisfaction: z.object({

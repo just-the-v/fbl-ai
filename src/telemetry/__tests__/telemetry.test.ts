@@ -36,7 +36,7 @@ function makeAnalysis(overrides?: Partial<SessionAnalysis>): SessionAnalysis {
         target: 'claude_md',
         scope: 'project',
         rule: 'Always read the README before making changes',
-        confidence: 0.85,
+        confidence: 'high',
         reasoning: 'Multiple sessions showed missing context issues',
         status: 'pending',
       },
@@ -128,7 +128,7 @@ describe('anonymizeAnalysis', () => {
     expect(payload.analysis.suggestions).toHaveLength(1);
     expect(payload.analysis.suggestions[0]).toEqual({
       target: 'claude_md',
-      confidence: 0.85,
+      confidence: 'high',
     });
   });
 

@@ -158,13 +158,11 @@ export function registerReportCommand(program: Command): void {
           const s = displayed[i];
           const label = targetLabel(s.target);
           const tag = projectTag(s.projects);
-          const confidencePct = Math.round(s.confidence * 100);
-
           console.log(
             `  ${chalk.cyan(`[${i + 1}]`)} ${chalk.cyan(`[${label}${tag}]`)} ${chalk.white(`"${s.rule}"`)}`,
           );
           console.log(
-            `                  Confidence: ${confidencePct}% | Based on: ${s.sessionCount} session${s.sessionCount > 1 ? 's' : ''}`,
+            `                  Confidence: ${s.confidence} | Based on: ${s.sessionCount} session${s.sessionCount > 1 ? 's' : ''}`,
           );
         }
         if (allDeduped.length > displayLimit) {

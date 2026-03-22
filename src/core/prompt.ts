@@ -90,10 +90,26 @@ Analyze this session and return a JSON object (NO markdown fences, NO explanatio
       "target": "<one of: claude_md, skill, workflow, hook, settings>",
       "scope": "<global|project>",
       "rule": "<max 300 chars, the actionable rule to add>",
-      "confidence": <0.0 to 1.0>,
+      "confidence": "<high|medium|low>",
       "reasoning": "<max 200 chars explaining why>"
     }
   ],
+
+Confidence criteria:
+- high: friction observed 3+ times in the session, OR suggestion fixes a pattern that caused a visible failure (build fail, wrong file edited, rollback)
+- medium: friction observed 1-2 times, suggestion clearly linked to an observed problem in the transcript
+- low: friction inferred but not explicitly visible, or suggestion based on general best practice rather than an observed problem
+
+Target type examples:
+- claude_md: a concrete rule for CLAUDE.md (e.g. "Always run tests before committing")
+- skill: a skill to create with a precise behavior (e.g. "Create a /deploy skill that runs terraform plan, shows diff, and asks confirmation before apply")
+- workflow: a change in working process (e.g. "Split infrastructure changes and application code into separate sessions")
+- hook: an automated hook (e.g. "Add PreToolUse hook that warns before git push to main")
+- settings: a Claude Code settings change (e.g. "Add 'npm test' to the allowed commands list in settings.json")
+
+Suggestions must be concrete and directly implementable — not process advice or abstract recommendations.
+Return your TOP 3 suggestions maximum, ranked by expected impact on future sessions (most impactful first). Quality over quantity — 1 great suggestion beats 3 mediocre ones.
+
   "satisfaction": {
     "positive_signals": <int, count of positive user signals like "perfect", "thanks", acceptance>,
     "negative_signals": <int, count of negative signals like "no", "wrong", corrections, frustration>
@@ -103,6 +119,7 @@ Analyze this session and return a JSON object (NO markdown fences, NO explanatio
 
 Rules:
 - Return ONLY valid JSON, no markdown code fences, no text before or after
+- Only flag frictions that would likely recur in future sessions. Ignore one-time setup issues, first-time configuration, or problems already resolved within the session.
 - If the session has no frictions, return an empty frictions array
 - If you can't determine a field, use reasonable defaults
 - Do NOT include id or status fields in suggestions (they are added by the CLI)
