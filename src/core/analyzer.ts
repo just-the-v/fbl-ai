@@ -45,7 +45,8 @@ export async function analyzeSession(
     response = await adapter.analyze(retryPrompt);
     parsed = tryParseResponse(response.content);
     if (!parsed) {
-      throw new Error('LLM returned invalid JSON after retry');
+      const preview = response.content.slice(0, 200);
+      throw new Error(`LLM returned invalid JSON after retry. Response starts with: ${preview}`);
     }
   }
 
@@ -90,14 +91,38 @@ export async function analyzeSession(
 }
 
 function tryParseResponse(content: string): any | null {
-  // Strip markdown fences if present
-  let cleaned = content.trim();
-  if (cleaned.startsWith('```')) {
-    cleaned = cleaned.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
-  }
+  // 1. Try direct parse first
+  const trimmed = content.trim();
   try {
-    return JSON.parse(cleaned);
+    return JSON.parse(trimmed);
   } catch {
-    return null;
+    // continue to extraction strategies
   }
+
+  // 2. Extract from markdown fences (greedy: largest fenced block)
+  const fenceMatch = trimmed.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/);
+  if (fenceMatch) {
+    try {
+      return JSON.parse(fenceMatch[1].trim());
+    } catch {
+      // continue
+    }
+  }
+
+  // 3. Extract first { ... } or [ ... ] JSON structure
+  const jsonStart = trimmed.search(/[{\[]/);
+  if (jsonStart !== -1) {
+    const bracket = trimmed[jsonStart];
+    const closeBracket = bracket === '{' ? '}' : ']';
+    const lastClose = trimmed.lastIndexOf(closeBracket);
+    if (lastClose > jsonStart) {
+      try {
+        return JSON.parse(trimmed.slice(jsonStart, lastClose + 1));
+      } catch {
+        // give up
+      }
+    }
+  }
+
+  return null;
 }
