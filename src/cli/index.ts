@@ -36,6 +36,11 @@ export function registerHookHandler(program: Command): void {
 
       const { session_id, transcript_path, cwd } = input;
 
+      // Check transcript file exists, exit silently if not
+      if (!fs.existsSync(transcript_path)) {
+        process.exit(0);
+      }
+
       // Check config exists, exit silently if not
       const configPath = getConfigPath();
       if (!fs.existsSync(configPath)) {
