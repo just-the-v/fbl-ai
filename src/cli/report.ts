@@ -1,9 +1,9 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
-import { execSync } from 'node:child_process';
 import { listAnalyses } from '../storage/analyses.js';
 import { getDisplaySuggestions } from '../storage/suggestions.js';
 import { getCachedRecommendations, findRelevantRecommendation } from '../storage/recommendations.js';
+import { resolveRepoRoot } from '../utils/git.js';
 import type { Friction } from '../core/schema.js';
 
 function parseDuration(value: string): number {
@@ -54,11 +54,7 @@ function shortProjectName(fullPath: string): string {
 }
 
 function detectCurrentProject(): string {
-  try {
-    return execSync('git rev-parse --show-toplevel', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
-  } catch {
-    return process.cwd();
-  }
+  return resolveRepoRoot(process.cwd());
 }
 
 function projectTag(projects: string[] | undefined): string {
