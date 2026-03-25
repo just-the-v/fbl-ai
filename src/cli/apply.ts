@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
-import { execSync } from 'node:child_process';
+import { execSync, execFileSync } from 'node:child_process';
 import { getDisplaySuggestions, updateSuggestionStatus } from '../storage/suggestions.js';
 
 function shortProjectName(fullPath: string): string {
@@ -80,13 +80,12 @@ export function registerApplyCommand(program: Command) {
       }
 
       // 5. Build prompt and launch Claude Code headless
-      const rule = suggestion.rule.replace(/"/g, '\\"');
-      const prompt = `Read the file ${targetFile} (create it if it doesn't exist). Add this rule in the most appropriate section (create the section if needed): "${rule}". Integrate it naturally with the existing content style. Do not remove or modify existing rules.`;
+      const prompt = `Read the file ${targetFile} (create it if it doesn't exist). Add this rule in the most appropriate section (create the section if needed): "${suggestion.rule}". Integrate it naturally with the existing content style. Do not remove or modify existing rules.`;
 
       console.log(chalk.cyan('\nLaunching Claude Code to apply suggestion...\n'));
 
       try {
-        execSync(`claude -p "${prompt}" --allowedTools Edit,Read,Write`, {
+        execFileSync('claude', ['-p', prompt, '--allowedTools', 'Edit,Read,Write'], {
           stdio: 'inherit',
         });
       } catch (err) {
