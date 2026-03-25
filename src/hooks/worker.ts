@@ -19,7 +19,10 @@ async function main() {
     // 2. Check if already analyzed
     if (isAlreadyAnalyzed(sessionId)) return;
 
-    // 3. Analyze
+    // 3. Check transcript file exists
+    if (!fs.existsSync(transcriptPath)) return;
+
+    // 4. Analyze
     const analysis = await analyzeSession(transcriptPath, { config, projectPath: cwd });
     if (!analysis) return; // too short
 

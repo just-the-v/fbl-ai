@@ -1,4 +1,4 @@
-import { readFileSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 
 export interface ParsedMessage {
   role: 'user' | 'assistant';
@@ -83,6 +83,9 @@ function truncate(text: string, maxLength: number): string {
 }
 
 export function parseTranscript(filePath: string): ParsedSession {
+  if (!existsSync(filePath)) {
+    throw new Error(`Transcript file not found: ${filePath}`);
+  }
   const fileBytes = statSync(filePath).size;
   const raw = readFileSync(filePath, 'utf-8');
   const lines = raw.split('\n').filter(Boolean);
