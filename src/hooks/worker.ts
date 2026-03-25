@@ -2,6 +2,7 @@ import { analyzeSession } from '../core/analyzer.js';
 import { loadConfig, getDataDir } from '../storage/config.js';
 import { storeAnalysis, isAlreadyAnalyzed } from '../storage/analyses.js';
 import { loadSuggestionsIndex, saveSuggestionsIndex } from '../storage/suggestions.js';
+import { resolveRepoRoot } from '../utils/git.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
@@ -22,8 +23,9 @@ async function main() {
     // 3. Check transcript file exists
     if (!fs.existsSync(transcriptPath)) return;
 
-    // 4. Analyze
-    const analysis = await analyzeSession(transcriptPath, { config, projectPath: cwd });
+    // 4. Analyze (resolve worktree paths to real repo root)
+    const resolvedCwd = cwd ? resolveRepoRoot(cwd) : cwd;
+    const analysis = await analyzeSession(transcriptPath, { config, projectPath: resolvedCwd });
     if (!analysis) return; // too short
 
     // 4. Store analysis

@@ -1,7 +1,10 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
+import * as path from 'node:path';
+import * as os from 'node:os';
 import { execSync, execFileSync } from 'node:child_process';
 import { getDisplaySuggestions, updateSuggestionStatus } from '../storage/suggestions.js';
+import { resolveRepoRoot } from '../utils/git.js';
 
 function shortProjectName(fullPath: string): string {
   const parts = fullPath.split('/').filter(Boolean);
@@ -39,17 +42,22 @@ export function registerApplyCommand(program: Command) {
       if (suggestion.scope === 'global') {
         targetFile = '~/.claude/CLAUDE.md';
       } else if (suggestion.projects && suggestion.projects.length === 1) {
-        projectPath = suggestion.projects[0];
+        projectPath = resolveRepoRoot(suggestion.projects[0]);
         targetFile = `${projectPath}/CLAUDE.md`;
       } else {
         try {
-          const gitRoot = execSync('git rev-parse --show-toplevel', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
-          projectPath = gitRoot;
-          targetFile = `${gitRoot}/CLAUDE.md`;
+          // resolveRepoRoot handles worktrees, falling back to cwd on error
+          const repoRoot = resolveRepoRoot(process.cwd());
+          projectPath = repoRoot;
+          targetFile = `${repoRoot}/CLAUDE.md`;
         } catch {
           targetFile = '~/.claude/CLAUDE.md';
         }
       }
+
+      const displayFile = projectPath
+        ? `./${path.relative(projectPath, targetFile)}`
+        : targetFile;
 
       // 3. Dry run: show details and exit
       if (opts.dryRun) {
@@ -82,7 +90,9 @@ export function registerApplyCommand(program: Command) {
       // 5. Build prompt and launch Claude Code headless
       const prompt = `Read the file ${targetFile} (create it if it doesn't exist). Add this rule in the most appropriate section (create the section if needed): "${suggestion.rule}". Integrate it naturally with the existing content style. Do not remove or modify existing rules.`;
 
-      console.log(chalk.cyan('\nLaunching Claude Code to apply suggestion...\n'));
+      console.log(chalk.cyan(`\nApplying suggestion #${n}`));
+      console.log(`  ${chalk.bold('File:')}  ${displayFile}`);
+      console.log(`  ${chalk.bold('Rule:')}  "${suggestion.rule}"\n`);
 
       try {
         execFileSync('claude', ['-p', prompt, '--allowedTools', 'Edit,Read,Write'], {
@@ -93,8 +103,56 @@ export function registerApplyCommand(program: Command) {
         return;
       }
 
-      // 6. Mark as applied
+      // 6. Check what changed
+      const resolvedFile = targetFile.startsWith('~')
+        ? targetFile.replace('~', os.homedir())
+        : targetFile;
+
+      let diff = '';
+      let diffAvailable = true;
+      try {
+        diff = execSync(`git diff -- "${resolvedFile}"`, {
+          encoding: 'utf-8',
+          stdio: ['pipe', 'pipe', 'pipe'],
+        }).trim();
+      } catch {
+        diffAvailable = false;
+      }
+
+      if (diffAvailable && !diff) {
+        console.log(chalk.yellow('\nNo changes detected. The file was not modified.'));
+        console.log(chalk.dim('Suggestion was NOT marked as applied.\n'));
+        return;
+      }
+
+      if (diff) {
+        console.log(chalk.bold('\nChanges:'));
+        console.log(chalk.dim('-'.repeat(40)));
+        console.log(diff);
+        console.log(chalk.dim('-'.repeat(40)));
+      }
+
+      // 7. Mark as applied with summary
+      let diffStats = '';
+      if (diff) {
+        try {
+          diffStats = execSync(`git diff --stat -- "${resolvedFile}"`, {
+            encoding: 'utf-8',
+            stdio: ['pipe', 'pipe', 'pipe'],
+          }).trim();
+        } catch {
+          // ignore
+        }
+      }
+
       updateSuggestionStatus(suggestion.id, 'applied', new Date().toISOString());
-      console.log(chalk.green(`\nSuggestion [${n}] marked as applied.`));
+
+      console.log(chalk.green('\nSuggestion applied successfully'));
+      console.log(`  ${chalk.bold('File:')}    ${displayFile}`);
+      console.log(`  ${chalk.bold('Rule:')}    "${suggestion.rule}"`);
+      if (diffStats) {
+        console.log(`  ${chalk.bold('Stats:')}   ${diffStats}`);
+      }
+      console.log();
     });
 }
